@@ -16,10 +16,6 @@ function getRandomNumberComma(min, max, comma) {
   if (max<=min) {
     return alert('Неверное условие');
   }
-  const lengthMin = min.toString().match(/\.(\d+)/)?.[1].length;
-  if (lengthMin>comma) {
-    return alert('Неверное условие');
-  }
   const num = (Math.random() * (max - min) + min);
   return +num.toFixed(comma);
 }

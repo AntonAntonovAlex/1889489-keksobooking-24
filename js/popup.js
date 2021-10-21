@@ -24,7 +24,6 @@ const renderFeatures = (announcementElement, features, nodeFeatures) => {
   } else {
     announcementElement.querySelector(`'.${nodeFeatures}s'`).classList.add('hidden');
   }
-  return announcementElement;
 };
 
 const renderPhotos = (announcementElement, photos, nodePhoto, nodePhotos) => {
@@ -38,49 +37,27 @@ const renderPhotos = (announcementElement, photos, nodePhoto, nodePhotos) => {
   } else {
     announcementElement.querySelector(nodePhotos).classList.add('hidden');
   }
-  return announcementElement;
 };
 
-const renderFieldCard = (announcementElement, nodeValue, offerValue, meaningString) => {
+const renderFieldCard = (announcementElement, nodeValue, offerValue, propertyValue, meaningString) => {
   if (offerValue) {
-    if (meaningString) {
-      announcementElement.querySelector(nodeValue).textContent = `${offerValue} ${meaningString}`;
-    } else {
-      announcementElement.querySelector(nodeValue).textContent = offerValue;
-    }
+    announcementElement.querySelector(nodeValue)[propertyValue] = meaningString ? meaningString : offerValue;
   } else {
     announcementElement.querySelector(nodeValue).classList.add('hidden');
   }
-  return announcementElement;
 };
 
 const createCard = (announcementElement, author, offer) => {
   const {title, address, price, type, rooms, guests, checkin, checkout, features, description, photos} = offer;
   const {avatar} = author;
-  renderFieldCard (announcementElement, '.popup__title', title);
-  renderFieldCard (announcementElement, '.popup__text--address', address);
-  renderFieldCard (announcementElement, '.popup__text--price', price, '₽/ночь');
-  renderFieldCard (announcementElement, '.popup__description', description);
-  if (rooms || guests) {
-    announcementElement.querySelector('.popup__text--capacity').textContent = `${rooms} комнаты для ${guests} гостей`;
-  } else {
-    announcementElement.querySelector('.popup__text--capacity').classList.add('hidden');
-  }
-  if (checkin || checkout) {
-    announcementElement.querySelector('.popup__text--time').textContent = `Заезд после ${checkin}, выезд до ${checkout}`;
-  } else {
-    announcementElement.querySelector('.popup__text--time').classList.add('hidden');
-  }
-  if (avatar) {
-    announcementElement.querySelector('.popup__avatar').src = avatar;
-  } else {
-    announcementElement.querySelector('.popup__avatar').classList.add('hidden');
-  }
-  if (type) {
-    announcementElement.querySelector('.popup__type').textContent = RUS_BUILDING_TYPES[type];
-  } else {
-    announcementElement.querySelector('.popup__type').classList.add('hidden');
-  }
+  renderFieldCard (announcementElement, '.popup__title', title, 'textContent');
+  renderFieldCard (announcementElement, '.popup__text--address', address, 'textContent');
+  renderFieldCard (announcementElement, '.popup__text--price', price, 'textContent', `${price} ₽/ночь`);
+  renderFieldCard (announcementElement, '.popup__description', description, 'textContent');
+  renderFieldCard (announcementElement, '.popup__text--capacity', rooms || guests, 'textContent', `${rooms} комнаты для ${guests} гостей`);
+  renderFieldCard (announcementElement, '.popup__text--time', checkin || checkout, 'textContent', `Заезд после ${checkin}, выезд до ${checkout}`);
+  renderFieldCard (announcementElement, '.popup__avatar', avatar, 'src');
+  renderFieldCard (announcementElement, '.popup__type', type, 'textContent', RUS_BUILDING_TYPES[type]);
   renderFeatures(announcementElement, features, 'popup__feature');
   renderPhotos(announcementElement, photos, '.popup__photo', '.popup__photos');
   return announcementElement;

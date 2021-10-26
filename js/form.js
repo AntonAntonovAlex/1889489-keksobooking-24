@@ -1,5 +1,3 @@
-const MIN_TITLE_LENGTH = 30;
-const MAX_TITLE_LENGTH = 100;
 const MAX_PRICE = 1000000;
 const allFormElements = document.querySelectorAll('.ad-form__element');
 const allFormFilters = document.querySelectorAll('.map__filter');
@@ -37,19 +35,6 @@ const enableForm = () => {
 };
 
 export {enableForm, disableForm};
-
-const titleAnnouncement =  document.querySelector('#title');
-titleAnnouncement.addEventListener('input', () => {
-  const valueLength = titleAnnouncement.value.length;
-  if (valueLength < MIN_TITLE_LENGTH) {
-    titleAnnouncement.setCustomValidity(`Ещё ${MIN_TITLE_LENGTH - valueLength} симв.`);
-  } else if (valueLength > MAX_TITLE_LENGTH) {
-    titleAnnouncement.setCustomValidity(`Удалите ${valueLength - MAX_TITLE_LENGTH} симв.`);
-  } else {
-    titleAnnouncement.setCustomValidity('');
-  }
-  titleAnnouncement.reportValidity();
-});
 
 const priceAnnouncement =  document.querySelector('#price');
 priceAnnouncement.addEventListener('input', () => {

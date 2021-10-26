@@ -1,6 +1,13 @@
-const MIN_TITLE_LENGTH = 30;
-const MAX_TITLE_LENGTH = 100;
+//const MIN_TITLE_LENGTH = 30;
+//const MAX_TITLE_LENGTH = 100;
 const MAX_PRICE = 1000000;
+const MIN_HOUSING_PRICES = {
+  bungalow: '0',
+  flat: '1000',
+  hotel: '3000',
+  house: '5000',
+  palace: '10000',
+};
 const allFormElements = document.querySelectorAll('.ad-form__element');
 const allFormFilters = document.querySelectorAll('.map__filter');
 const formAnnouncement = document.querySelector('.ad-form');
@@ -38,7 +45,7 @@ const enableForm = () => {
 
 export {enableForm, disableForm};
 
-const titleAnnouncement =  document.querySelector('#title');
+/*const titleAnnouncement =  document.querySelector('#title');
 titleAnnouncement.addEventListener('input', () => {
   const valueLength = titleAnnouncement.value.length;
   if (valueLength < MIN_TITLE_LENGTH) {
@@ -49,7 +56,7 @@ titleAnnouncement.addEventListener('input', () => {
     titleAnnouncement.setCustomValidity('');
   }
   titleAnnouncement.reportValidity();
-});
+});*/
 
 const priceAnnouncement =  document.querySelector('#price');
 priceAnnouncement.addEventListener('input', () => {
@@ -95,4 +102,18 @@ capacityRoomAnnouncement.addEventListener('change', () => {
   capacityRoomAnnouncement.reportValidity();
 });
 
+const timeinAnnouncement =  document.querySelector('#timein');
+const timeoutAnnouncement =  document.querySelector('#timeout');
+timeinAnnouncement.addEventListener('change', () => {
+  timeoutAnnouncement.value = timeinAnnouncement.value;
+});
 
+timeoutAnnouncement.addEventListener('change', () => {
+  timeinAnnouncement.value = timeoutAnnouncement.value;
+});
+
+const typeBuildingAnnouncement =  document.querySelector('#type');
+typeBuildingAnnouncement.addEventListener('change', () => {
+  priceAnnouncement.min = MIN_HOUSING_PRICES[typeBuildingAnnouncement.value];
+  priceAnnouncement.reportValidity();
+});

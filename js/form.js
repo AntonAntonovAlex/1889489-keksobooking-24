@@ -12,6 +12,12 @@ const formAnnouncement = document.querySelector('.ad-form');
 const headerFormAnnouncement =  document.querySelector('.ad-form-header');
 const mapFilter = document.querySelector('.map__filters');
 const mapFeatures = document.querySelector('.map__features');
+const priceAnnouncement =  document.querySelector('#price');
+const roomNumberAnnouncement =  document.querySelector('#room_number');
+const capacityRoomAnnouncement =  document.querySelector('#capacity');
+const timeinAnnouncement =  document.querySelector('#timein');
+const timeoutAnnouncement =  document.querySelector('#timeout');
+const typeBuildingAnnouncement =  document.querySelector('#type');
 
 const disableForm = () => {
   formAnnouncement.classList.add('ad-form--disabled');
@@ -41,9 +47,6 @@ const enableForm = () => {
   });
 };
 
-export {enableForm, disableForm};
-
-const priceAnnouncement =  document.querySelector('#price');
 priceAnnouncement.addEventListener('input', () => {
   const valuePrice = priceAnnouncement.value;
   if (valuePrice > MAX_PRICE) {
@@ -54,8 +57,6 @@ priceAnnouncement.addEventListener('input', () => {
   priceAnnouncement.reportValidity();
 });
 
-const roomNumberAnnouncement =  document.querySelector('#room_number');
-const capacityRoomAnnouncement =  document.querySelector('#capacity');
 const compareCapacityRoom = (roomNumber, capacityRoom) => {
   roomNumber = Number(roomNumber);
   capacityRoom = Number(capacityRoom);
@@ -87,8 +88,6 @@ capacityRoomAnnouncement.addEventListener('change', () => {
   capacityRoomAnnouncement.reportValidity();
 });
 
-const timeinAnnouncement =  document.querySelector('#timein');
-const timeoutAnnouncement =  document.querySelector('#timeout');
 timeinAnnouncement.addEventListener('change', () => {
   timeoutAnnouncement.value = timeinAnnouncement.value;
 });
@@ -97,7 +96,6 @@ timeoutAnnouncement.addEventListener('change', () => {
   timeinAnnouncement.value = timeoutAnnouncement.value;
 });
 
-const typeBuildingAnnouncement =  document.querySelector('#type');
 typeBuildingAnnouncement.addEventListener('change', () => {
   priceAnnouncement.min = MIN_HOUSING_PRICES[typeBuildingAnnouncement.value];
   priceAnnouncement.reportValidity();

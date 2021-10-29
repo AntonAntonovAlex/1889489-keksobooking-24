@@ -98,5 +98,6 @@ timeoutAnnouncement.addEventListener('change', () => {
 
 typeBuildingAnnouncement.addEventListener('change', () => {
   priceAnnouncement.min = MIN_HOUSING_PRICES[typeBuildingAnnouncement.value];
+  priceAnnouncement.placeholder = MIN_HOUSING_PRICES[typeBuildingAnnouncement.value];
   priceAnnouncement.reportValidity();
 });

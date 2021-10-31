@@ -1,11 +1,5 @@
-const MAX_PRICE = 1000000;
-const MIN_HOUSING_PRICES = {
-  bungalow: '0',
-  flat: '1000',
-  hotel: '3000',
-  house: '5000',
-  palace: '10000',
-};
+import { MAX_PRICE, MIN_HOUSING_PRICES } from './data.js';
+
 const allFormElements = document.querySelectorAll('.ad-form__element');
 const allFormFilters = document.querySelectorAll('.map__filter');
 const formAnnouncement = document.querySelector('.ad-form');
@@ -47,16 +41,6 @@ const enableForm = () => {
   });
 };
 
-priceAnnouncement.addEventListener('input', () => {
-  const valuePrice = priceAnnouncement.value;
-  if (valuePrice > MAX_PRICE) {
-    priceAnnouncement.setCustomValidity('Цена не должна превышать 1 000 000');
-  } else {
-    priceAnnouncement.setCustomValidity('');
-  }
-  priceAnnouncement.reportValidity();
-});
-
 const compareCapacityRoom = (roomNumber, capacityRoom) => {
   roomNumber = Number(roomNumber);
   capacityRoom = Number(capacityRoom);
@@ -77,6 +61,16 @@ const compareCapacityRoom = (roomNumber, capacityRoom) => {
     capacityRoomAnnouncement.setCustomValidity('Не подхoдит для выбранного кол-ва комнат');
   }
 };
+
+priceAnnouncement.addEventListener('input', () => {
+  const valuePrice = priceAnnouncement.value;
+  if (valuePrice > MAX_PRICE) {
+    priceAnnouncement.setCustomValidity('Цена не должна превышать 1 000 000');
+  } else {
+    priceAnnouncement.setCustomValidity('');
+  }
+  priceAnnouncement.reportValidity();
+});
 
 roomNumberAnnouncement.addEventListener('change', () => {
   compareCapacityRoom(roomNumberAnnouncement.value, capacityRoomAnnouncement.value);
@@ -101,3 +95,5 @@ typeBuildingAnnouncement.addEventListener('change', () => {
   priceAnnouncement.placeholder = MIN_HOUSING_PRICES[typeBuildingAnnouncement.value];
   priceAnnouncement.reportValidity();
 });
+
+export {disableForm, enableForm};

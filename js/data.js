@@ -1,5 +1,13 @@
-import { getRandomNumber } from './util.js';
-import { getRandomNumberComma } from './util.js';
+import { getRandomNumber, getRandomNumberComma } from './util.js';
+
+const MAX_PRICE = 1000000;
+const MIN_HOUSING_PRICES = {
+  bungalow: '0',
+  flat: '1000',
+  hotel: '3000',
+  house: '5000',
+  palace: '10000',
+};
 const LAT_MIN = 35.65000;
 const LAT_MAX = 35.70000;
 const LNG_MIN = 139.70000;
@@ -17,6 +25,13 @@ const BUILDING_TYPES = [
   'bungalow',
   'hotel',
 ];
+const RUS_BUILDING_TYPES = {
+  flat: 'Квартира',
+  bungalow: 'Бунгало',
+  house: 'Дом',
+  palace: 'Дворец',
+  hotel: 'Отель',
+};
 const OFFER_DESCRIPTIONS = [
   'Закрытая парковка',
   'Панорамное остекление',
@@ -92,4 +107,5 @@ const createAnnouncements = (announcementsNumber) => {
   }
   return newAnnouncements;
 };
-export {createAnnouncements};
+
+export {createAnnouncements, RUS_BUILDING_TYPES, MAX_PRICE, MIN_HOUSING_PRICES};

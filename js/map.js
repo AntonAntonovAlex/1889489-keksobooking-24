@@ -5,6 +5,10 @@ import { createAnnouncements } from './data.js';
 
 const addressAnnouncement =  document.querySelector('#address');
 const ANNOUNCEMENTS_NUMBER = 10;
+const MAIN_PIN_SIZE = 52;
+const USER_PIN_SIZE = 40;
+const LAT_TOKIO = 35.68294;
+const LNG_TOKIO = 139.76764;
 const similarAnnouncements = createAnnouncements(ANNOUNCEMENTS_NUMBER);
 disableForm();
 const map = L.map('map-canvas')
@@ -12,8 +16,8 @@ const map = L.map('map-canvas')
     enableForm();
   })
   .setView({
-    lat: 35.68294,
-    lng: 139.76764,
+    lat: LAT_TOKIO,
+    lng: LNG_TOKIO,
   }, 12);
 
 L.tileLayer(
@@ -25,14 +29,14 @@ L.tileLayer(
 
 const mainPinIcon = L.icon({
   iconUrl: 'img/main-pin.svg',
-  iconSize: [52, 52],
-  iconAnchor: [26, 52],
+  iconSize: [MAIN_PIN_SIZE, MAIN_PIN_SIZE],
+  iconAnchor: [MAIN_PIN_SIZE/2, MAIN_PIN_SIZE],
 });
 
 const mainPinMarker = L.marker(
   {
-    lat: 35.68294,
-    lng: 139.76764,
+    lat: LAT_TOKIO,
+    lng: LNG_TOKIO,
   },
   {
     draggable: true,
@@ -43,7 +47,7 @@ const mainPinMarker = L.marker(
 mainPinMarker.addTo(map);
 addressAnnouncement.value = `${mainPinMarker.getLatLng().lat}, ${mainPinMarker.getLatLng().lng}`;
 
-mainPinMarker.on('moveend', (evt) => {
+mainPinMarker.on('drag', (evt) => {
   addressAnnouncement.value = `${getRound(evt.target.getLatLng().lat.toFixed(5))}, ${getRound(evt.target.getLatLng().lng.toFixed(5))}`;
 });
 
@@ -52,8 +56,8 @@ const createMarker = (announcement) => {
 
   const icon = L.icon({
     iconUrl: 'img/pin.svg',
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
+    iconSize: [USER_PIN_SIZE, USER_PIN_SIZE],
+    iconAnchor: [USER_PIN_SIZE/2, USER_PIN_SIZE],
   });
 
   const marker = L.marker(

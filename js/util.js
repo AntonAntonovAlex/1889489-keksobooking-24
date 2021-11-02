@@ -18,5 +18,7 @@ function getRandomNumberComma(min, max, comma) {
   const num = (Math.random() * (max - min) + min);
   return +num.toFixed(comma);
 }
-export {getRandomNumber};
-export {getRandomNumberComma};
+
+const getRound = (value) => (value % 1 === 0) ? Math.round(value) : value;
+
+export {getRound, getRandomNumber, getRandomNumberComma};

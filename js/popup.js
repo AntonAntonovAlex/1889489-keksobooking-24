@@ -1,16 +1,6 @@
-import { createAnnouncements } from './data.js';
-const ANNOUNCEMENTS_NUMBER = 10;
-const RUS_BUILDING_TYPES = {
-  flat: 'Квартира',
-  bungalow: 'Бунгало',
-  house: 'Дом',
-  palace: 'Дворец',
-  hotel: 'Отель',
-};
-const similarAnnouncements = createAnnouncements(ANNOUNCEMENTS_NUMBER);
+import { RUS_BUILDING_TYPES } from './data.js';
+
 const similarAnnouncementTemplate = document.querySelector('#card').content.querySelector('.popup');
-const similarListAnnouncement = document.querySelector('.map__canvas');
-const similarListAnnouncements = [];
 
 const renderFeatures = (announcementElement, features, nodeFeatures) => {
   if (features) {
@@ -47,9 +37,10 @@ const renderFieldCard = (announcementElement, nodeValue, offerValue, propertyVal
   }
 };
 
-const createCard = (announcementElement, author, offer) => {
+const createCard = (author, offer) => {
   const {title, address, price, type, rooms, guests, checkin, checkout, features, description, photos} = offer;
   const {avatar} = author;
+  const announcementElement = similarAnnouncementTemplate.cloneNode(true);
   renderFieldCard (announcementElement, '.popup__title', title, 'textContent');
   renderFieldCard (announcementElement, '.popup__text--address', address, 'textContent');
   renderFieldCard (announcementElement, '.popup__text--price', price, 'textContent', `${price} ₽/ночь`);
@@ -63,10 +54,4 @@ const createCard = (announcementElement, author, offer) => {
   return announcementElement;
 };
 
-similarAnnouncements.forEach(({author, offer}) => {
-  const announcementElement = similarAnnouncementTemplate.cloneNode(true);
-  createCard(announcementElement, author, offer);
-  similarListAnnouncements.push(announcementElement);
-});
-
-similarListAnnouncement.appendChild(similarListAnnouncements[0]);
+export {createCard};

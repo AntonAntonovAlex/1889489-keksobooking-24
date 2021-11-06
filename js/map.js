@@ -1,16 +1,18 @@
-import { enableForm, disableForm } from './form.js';
+import { enableForm, disableForm, disableFilter } from './form.js';
 import { getRound } from './util.js';
 import { createCard } from './popup.js';
-import { createAnnouncements } from './data.js';
+import { getData } from './api.js';
 
 const addressAnnouncement =  document.querySelector('#address');
-const ANNOUNCEMENTS_NUMBER = 10;
 const MAIN_PIN_SIZE = 52;
 const USER_PIN_SIZE = 40;
 const LAT_TOKIO = 35.68294;
 const LNG_TOKIO = 139.76764;
-const similarAnnouncements = createAnnouncements(ANNOUNCEMENTS_NUMBER);
+const ANNOUNCEMENTS_NUMBER = 10;
+
 disableForm();
+disableFilter();
+
 const map = L.map('map-canvas')
   .on('load', () => {
     enableForm();
@@ -51,30 +53,34 @@ mainPinMarker.on('drag', (evt) => {
   addressAnnouncement.value = `${getRound(evt.target.getLatLng().lat.toFixed(5))}, ${getRound(evt.target.getLatLng().lng.toFixed(5))}`;
 });
 
-const createMarker = (announcement) => {
-  const {lat, lng} = announcement.location;
+const createMarker = (announcements) => {
+  announcements.forEach((announcement) => {
+    const {lat, lng} = announcement.location;
+    const icon = L.icon({
+      iconUrl: 'img/pin.svg',
+      iconSize: [USER_PIN_SIZE, USER_PIN_SIZE],
+      iconAnchor: [USER_PIN_SIZE/2, USER_PIN_SIZE],
+    });
 
-  const icon = L.icon({
-    iconUrl: 'img/pin.svg',
-    iconSize: [USER_PIN_SIZE, USER_PIN_SIZE],
-    iconAnchor: [USER_PIN_SIZE/2, USER_PIN_SIZE],
+    const marker = L.marker(
+      {
+        lat,
+        lng,
+      },
+      {
+        icon,
+      },
+    );
+
+    marker
+      .addTo(map)
+      .bindPopup(createCard(announcement.author, announcement.offer));
+
   });
-
-  const marker = L.marker(
-    {
-      lat,
-      lng,
-    },
-    {
-      icon,
-    },
-  );
-
-  marker
-    .addTo(map)
-    .bindPopup(createCard(announcement.author, announcement.offer));
 };
 
-similarAnnouncements.forEach((announcement) => {
-  createMarker(announcement);
+getData((announcements) => {
+  createMarker(announcements.slice(0, ANNOUNCEMENTS_NUMBER));
 });
+
+export {mainPinMarker, LAT_TOKIO, LNG_TOKIO, addressAnnouncement, map};

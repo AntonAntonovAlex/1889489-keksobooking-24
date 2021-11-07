@@ -12,7 +12,7 @@ const renderFeatures = (announcementElement, features, nodeFeatures) => {
       }
     });
   } else {
-    announcementElement.querySelector(`'.${nodeFeatures}s'`).classList.add('hidden');
+    announcementElement.querySelector(`.${nodeFeatures}s`).classList.add('hidden');
   }
 };
 

@@ -1,42 +1,24 @@
-import { clearForm, disableFilter, enableFilter, showEror, showSuccess } from './form.js';
-import { showAlert } from './util.js';
-
-const getData = (onSuccess) => {
-  fetch('https://24.javascript.pages.academy/keksobooking/data')
-    .then((response) => {
-      if (response.ok) {
-        enableFilter();
-        return response.json();
-      } else {
-        throw new Error('Не удалось загрузить объявления. Попробуйте перезагрузить страницу');
-      }
-    })
-    .then((announcements) => {
-      onSuccess(announcements);
-    })
-    .catch((err) => {
-      showAlert(err);
-      disableFilter();
-    });
-};
-
-const sendData = (body) => {
+const fetchData = (url, method, onSuccess, onError, body) =>{
   fetch(
-    'https://24.javascript.pages.academy/keksobooking',
+    url,
     {
-      method: 'POST',
+      method: method,
       body,
     },
   )
     .then((response) => {
       if (response.ok) {
-        showSuccess();
-        clearForm();
+        return response.json();
       } else {
-        showEror();
+        throw new Error;
       }
+    })
+    .then((announcements) => {
+      onSuccess(announcements);
+    })
+    .catch(() => {
+      onError();
     });
 };
 
-
-export {getData, sendData};
+export {fetchData};

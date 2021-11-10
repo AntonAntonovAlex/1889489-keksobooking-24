@@ -1,4 +1,4 @@
-import { RUS_BUILDING_TYPES } from './data.js';
+import { RUS_BUILDING_TYPES } from './constants.js';
 
 const similarAnnouncementTemplate = document.querySelector('#card').content.querySelector('.popup');
 

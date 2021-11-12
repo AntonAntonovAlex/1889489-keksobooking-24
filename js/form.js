@@ -1,14 +1,12 @@
-import { MAX_PRICE, MIN_HOUSING_PRICES } from './data.js';
-import { sendData } from './api.js';
+import { MAX_PRICE, MIN_HOUSING_PRICES } from './constants.js';
+import { fetchData } from './api.js';
 import { isEscapeKey } from './util.js';
-import { LAT_TOKIO, LNG_TOKIO, mainPinMarker, addressAnnouncement, map } from './map.js';
+import { LAT_TOKIO, LNG_TOKIO, mainPinMarker, addressAnnouncement, map, mapFilter, createMarkers, similarAnnouncements, ANNOUNCEMENTS_NUMBER } from './map.js';
 
+const URL = 'https://24.javascript.pages.academy/keksobooking';
 const allFormElements = document.querySelectorAll('.ad-form__element');
-const allFormFilters = document.querySelectorAll('.map__filter');
 const formAnnouncement = document.querySelector('.ad-form');
 const headerFormAnnouncement =  document.querySelector('.ad-form-header');
-const mapFilter = document.querySelector('.map__filters');
-const mapFeatures = document.querySelector('.map__features');
 const priceAnnouncement =  document.querySelector('#price');
 const roomNumberAnnouncement =  document.querySelector('#room_number');
 const capacityRoomAnnouncement =  document.querySelector('#capacity');
@@ -19,28 +17,12 @@ const successTemplate = document.querySelector('#success').content.querySelector
 const errorTemplate = document.querySelector('#error').content.querySelector('.error');
 const resetButton = document.querySelector('.ad-form__reset');
 
-const disableFilter = () => {
-  mapFilter.classList.add('ad-form--disabled');
-  mapFeatures.setAttribute('disabled', 'disabled');
-  allFormFilters.forEach((formFilter) => {
-    formFilter.setAttribute('disabled', 'disabled');
-  });
-};
-
 const disableForm = () => {
   formAnnouncement.classList.add('ad-form--disabled');
   headerFormAnnouncement.setAttribute('disabled', 'disabled');
 
   allFormElements.forEach((formElement) => {
     formElement.setAttribute('disabled', 'disabled');
-  });
-};
-
-const enableFilter = () => {
-  mapFilter.classList.remove('ad-form--disabled');
-  mapFeatures.removeAttribute('disabled');
-  allFormFilters.forEach((formFilter) => {
-    formFilter.removeAttribute('disabled');
   });
 };
 
@@ -103,41 +85,6 @@ typeBuildingAnnouncement.addEventListener('change', () => {
 });
 
 
-formAnnouncement.addEventListener ('submit', (evt) => {
-  evt.preventDefault();
-  sendData(
-    new FormData(evt.target),
-  );
-});
-
-const showSuccess = () => {
-  document.body.append(successTemplate);
-  document.addEventListener ('click', () =>{
-    successTemplate.remove();
-  });
-  document.addEventListener ('keydown', (evt) => {
-    if (isEscapeKey(evt))  {
-      evt.preventDefault();
-      successTemplate.remove();
-      document.removeEventListener('keydown', (evt));
-    }
-  });
-};
-
-const showEror = () => {
-  document.body.append(errorTemplate);
-  document.addEventListener ('click', () =>{
-    errorTemplate.remove();
-  });
-  document.addEventListener ('keydown', (evt) => {
-    if (isEscapeKey(evt))  {
-      evt.preventDefault();
-      errorTemplate.remove();
-      document.removeEventListener('keydown', (evt));
-    }
-  });
-};
-
 const clearForm = () => {
   formAnnouncement.reset();
   mapFilter.reset();
@@ -145,10 +92,43 @@ const clearForm = () => {
   priceAnnouncement.placeholder = '1000';
   mainPinMarker.setLatLng({lat: LAT_TOKIO, lng: LNG_TOKIO});
   addressAnnouncement.value = `${mainPinMarker.getLatLng().lat}, ${mainPinMarker.getLatLng().lng}`;
+
 };
 
-resetButton.addEventListener('click', () => {
+const addlistener = (template) => {
+  document.body.append(template);
+  document.addEventListener ('click', () =>{
+    template.remove();
+  });
+  document.addEventListener ('keydown', (evt) => {
+    if (isEscapeKey(evt))  {
+      evt.preventDefault();
+      template.remove();
+      document.removeEventListener('keydown', (evt));
+    }
+  });
+};
+
+const onSuccess = () => {
   clearForm();
+  const successElement = successTemplate.cloneNode(true);
+  addlistener(successElement);
+};
+
+const onError = () => {
+  const errorElement = errorTemplate.cloneNode(true);
+  addlistener(errorElement);
+};
+
+formAnnouncement.addEventListener ('submit', (evt) => {
+  evt.preventDefault();
+  fetchData(URL, 'POST', onSuccess, onError, new FormData(evt.target));
 });
 
-export {disableForm, enableForm, disableFilter, enableFilter, showEror, showSuccess, clearForm};
+resetButton.addEventListener('click', (evt) => {
+  evt.preventDefault();
+  clearForm();
+  createMarkers(similarAnnouncements.slice(0, ANNOUNCEMENTS_NUMBER));
+});
+
+export {disableForm, enableForm};

@@ -142,18 +142,11 @@ const compareAnnouncements = (announcement) => {
 };
 
 const getAnnouncementRank = (announcement) => {
-  const filterFeatures = document.querySelectorAll('[name="features"]');
   let rank = 0;
   if (!announcement.offer.features) {
     return rank;
   }
-  filterFeatures.forEach((features) => {
-    if (features.checked) {
-      if (announcement.offer.features.includes(features.value)) {
-        rank +=1;
-      }
-    }
-  });
+  rank = announcement.offer.features.length;
   return rank;
 };
 
@@ -165,9 +158,24 @@ const compareAnnouncementFeatures = (announcementA, announcementB) => {
 
 const setHousingFiltersChange = (announcements) =>{
   mapFilter.addEventListener('change', () => {
+    const filterCheckedFeatures = mapFeatures.querySelectorAll('.map__checkbox:checked');
     let result = announcements;
     if (housingType.value !== 'any' || housingPrice.value !== 'any' || housingRooms.value !== 'any' || housingGuests.value !== 'any') {
       result = announcements.filter(compareAnnouncements);
+    }
+    if (filterCheckedFeatures.length !== 0) {
+      result = result.filter((element) => {
+        let inIncludes = true;
+        if (!element.offer.features) {
+          return false;
+        }
+        filterCheckedFeatures.forEach((features) => {
+          if (!element.offer.features.includes(features.defaultValue)) {
+            inIncludes = false;
+          }
+        });
+        return inIncludes;
+      });
     }
     debounce(() => createMarkers(result
       .slice()

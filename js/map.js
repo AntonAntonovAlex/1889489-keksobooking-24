@@ -20,7 +20,7 @@ const housingGuests =  document.querySelector('#housing-guests');
 const mapFeatures = document.querySelector('.map__features');
 const allFormFilters = document.querySelectorAll('.map__filter');
 const mapFilter = document.querySelector('.map__filters');
-let similarAnnouncements = new Array();
+let similarAnnouncements = [];
 
 const disableFilter = () => {
   mapFilter.classList.add('ad-form--disabled');

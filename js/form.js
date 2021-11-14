@@ -2,6 +2,7 @@ import { MAX_PRICE, MIN_HOUSING_PRICES } from './constants.js';
 import { fetchData } from './api.js';
 import { isEscapeKey } from './util.js';
 import { LAT_TOKIO, LNG_TOKIO, mainPinMarker, addressAnnouncement, map, mapFilter, createMarkers, similarAnnouncements, ANNOUNCEMENTS_NUMBER } from './map.js';
+import { preview, previewHousingContainer } from './avatar.js';
 
 const URL = 'https://24.javascript.pages.academy/keksobooking';
 const allFormElements = document.querySelectorAll('.ad-form__element');
@@ -92,7 +93,10 @@ const clearForm = () => {
   priceAnnouncement.placeholder = '1000';
   mainPinMarker.setLatLng({lat: LAT_TOKIO, lng: LNG_TOKIO});
   addressAnnouncement.value = `${mainPinMarker.getLatLng().lat}, ${mainPinMarker.getLatLng().lng}`;
-
+  preview.src = 'img/muffin-grey.svg';
+  if (previewHousingContainer.firstChild) {
+    previewHousingContainer.firstChild.remove();
+  }
 };
 
 const addlistener = (template) => {

@@ -123,6 +123,7 @@ const onError = () => {
 formAnnouncement.addEventListener ('submit', (evt) => {
   evt.preventDefault();
   fetchData(URL, 'POST', onSuccess, onError, new FormData(evt.target));
+  createMarkers(similarAnnouncements.slice(0, ANNOUNCEMENTS_NUMBER));
 });
 
 resetButton.addEventListener('click', (evt) => {

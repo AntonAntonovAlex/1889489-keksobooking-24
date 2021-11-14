@@ -2,7 +2,7 @@ import { RUS_BUILDING_TYPES } from './constants.js';
 
 const similarAnnouncementTemplate = document.querySelector('#card').content.querySelector('.popup');
 
-const renderFeatures = (announcementElement, features, nodeFeatures) => {
+function renderFeatures(announcementElement, features, nodeFeatures) {
   if (features) {
     const featuresList = announcementElement.querySelectorAll(`.${nodeFeatures}`);
     featuresList.forEach((featuresListItem) => {
@@ -14,9 +14,9 @@ const renderFeatures = (announcementElement, features, nodeFeatures) => {
   } else {
     announcementElement.querySelector(`.${nodeFeatures}s`).classList.add('hidden');
   }
-};
+}
 
-const renderPhotos = (announcementElement, photos, nodePhoto, nodePhotos) => {
+function renderPhotos(announcementElement, photos, nodePhoto, nodePhotos) {
   if (photos) {
     announcementElement.querySelector(nodePhoto).src = photos[0];
     for (let i = 1; i<photos.length; i++) {
@@ -27,17 +27,17 @@ const renderPhotos = (announcementElement, photos, nodePhoto, nodePhotos) => {
   } else {
     announcementElement.querySelector(nodePhotos).classList.add('hidden');
   }
-};
+}
 
-const renderFieldCard = (announcementElement, nodeValue, offerValue, propertyValue, meaningString) => {
+function renderFieldCard(announcementElement, nodeValue, offerValue, propertyValue, meaningString) {
   if (offerValue) {
     announcementElement.querySelector(nodeValue)[propertyValue] = meaningString ? meaningString : offerValue;
   } else {
     announcementElement.querySelector(nodeValue).classList.add('hidden');
   }
-};
+}
 
-const createCard = (author, offer) => {
+function createCard(author, offer) {
   const {title, address, price, type, rooms, guests, checkin, checkout, features, description, photos} = offer;
   const {avatar} = author;
   const announcementElement = similarAnnouncementTemplate.cloneNode(true);
@@ -52,6 +52,6 @@ const createCard = (author, offer) => {
   renderFeatures(announcementElement, features, 'popup__feature');
   renderPhotos(announcementElement, photos, '.popup__photo', '.popup__photos');
   return announcementElement;
-};
+}
 
 export {createCard};

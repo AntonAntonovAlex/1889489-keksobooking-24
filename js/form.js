@@ -1,8 +1,7 @@
-import { MAX_PRICE, MIN_HOUSING_PRICES } from './constants.js';
+import { LAT_TOKIO, LNG_TOKIO, MAX_PRICE, MIN_HOUSING_PRICES, ANNOUNCEMENTS_NUMBER } from './constants.js';
 import { fetchData } from './api.js';
-import { isEscapeKey } from './util.js';
-import { LAT_TOKIO, LNG_TOKIO, mainPinMarker, addressAnnouncement, map, mapFilter, createMarkers, similarAnnouncements, ANNOUNCEMENTS_NUMBER } from './map.js';
-import { preview, previewHousingContainer } from './avatar.js';
+import { isEscapeKey } from './utils.js';
+import { mainPinMarker, map, createMarkers, similarAnnouncements } from './map.js';
 
 const URL = 'https://24.javascript.pages.academy/keksobooking';
 const allFormElements = document.querySelectorAll('.ad-form__element');
@@ -17,39 +16,10 @@ const typeBuildingAnnouncement =  document.querySelector('#type');
 const successTemplate = document.querySelector('#success').content.querySelector('.success');
 const errorTemplate = document.querySelector('#error').content.querySelector('.error');
 const resetButton = document.querySelector('.ad-form__reset');
-
-const disableForm = () => {
-  formAnnouncement.classList.add('ad-form--disabled');
-  headerFormAnnouncement.setAttribute('disabled', 'disabled');
-
-  allFormElements.forEach((formElement) => {
-    formElement.setAttribute('disabled', 'disabled');
-  });
-};
-
-const enableForm = () => {
-  formAnnouncement.classList.remove('ad-form--disabled');
-  headerFormAnnouncement.removeAttribute('disabled');
-
-  allFormElements.forEach((formElement) => {
-    formElement.removeAttribute('disabled');
-  });
-};
-
-const compareCapacityRoom = (roomNumber, capacityRoom) => {
-  const invalidText = 'Не подхoдит для выбранного кол-ва комнат';
-  roomNumber = Number(roomNumber);
-  capacityRoom = Number(capacityRoom);
-  let validityText = '';
-  if (capacityRoom === 0) {
-    if (roomNumber !== 100) {
-      validityText = invalidText;
-    }
-  } else if (roomNumber !== capacityRoom && roomNumber-1 !== capacityRoom && roomNumber-2 !== capacityRoom) {
-    validityText = invalidText;
-  }
-  capacityRoomAnnouncement.setCustomValidity(validityText);
-};
+const preview = document.querySelector('.ad-form-header__preview').querySelector('img');
+const previewHousingContainer = document.querySelector('.ad-form__photo');
+const mapFilter = document.querySelector('.map__filters');
+const addressAnnouncement =  document.querySelector('#address');
 
 priceAnnouncement.addEventListener('input', () => {
   const valuePrice = priceAnnouncement.value;
@@ -85,45 +55,6 @@ typeBuildingAnnouncement.addEventListener('change', () => {
   priceAnnouncement.reportValidity();
 });
 
-
-const clearForm = () => {
-  formAnnouncement.reset();
-  mapFilter.reset();
-  map.closePopup();
-  priceAnnouncement.placeholder = '1000';
-  mainPinMarker.setLatLng({lat: LAT_TOKIO, lng: LNG_TOKIO});
-  addressAnnouncement.value = `${mainPinMarker.getLatLng().lat}, ${mainPinMarker.getLatLng().lng}`;
-  preview.src = 'img/muffin-grey.svg';
-  if (previewHousingContainer.firstChild) {
-    previewHousingContainer.firstChild.remove();
-  }
-};
-
-const addlistener = (template) => {
-  document.body.append(template);
-  document.addEventListener ('click', () =>{
-    template.remove();
-  });
-  document.addEventListener ('keydown', (evt) => {
-    if (isEscapeKey(evt))  {
-      evt.preventDefault();
-      template.remove();
-      document.removeEventListener('keydown', (evt));
-    }
-  });
-};
-
-const onSuccess = () => {
-  clearForm();
-  const successElement = successTemplate.cloneNode(true);
-  addlistener(successElement);
-};
-
-const onError = () => {
-  const errorElement = errorTemplate.cloneNode(true);
-  addlistener(errorElement);
-};
-
 formAnnouncement.addEventListener ('submit', (evt) => {
   evt.preventDefault();
   fetchData(URL, 'POST', onSuccess, onError, new FormData(evt.target));
@@ -135,5 +66,78 @@ resetButton.addEventListener('click', (evt) => {
   clearForm();
   createMarkers(similarAnnouncements.slice(0, ANNOUNCEMENTS_NUMBER));
 });
+
+function disableForm() {
+  formAnnouncement.classList.add('ad-form--disabled');
+  headerFormAnnouncement.setAttribute('disabled', 'disabled');
+
+  allFormElements.forEach((formElement) => {
+    formElement.setAttribute('disabled', 'disabled');
+  });
+}
+
+function enableForm() {
+  formAnnouncement.classList.remove('ad-form--disabled');
+  headerFormAnnouncement.removeAttribute('disabled');
+
+  allFormElements.forEach((formElement) => {
+    formElement.removeAttribute('disabled');
+  });
+}
+
+function compareCapacityRoom(roomNumber, capacityRoom) {
+  const invalidText = 'Не подхoдит для выбранного кол-ва комнат';
+  roomNumber = Number(roomNumber);
+  capacityRoom = Number(capacityRoom);
+  let validityText = '';
+  if (capacityRoom === 0) {
+    if (roomNumber !== 100) {
+      validityText = invalidText;
+    }
+  } else if (roomNumber !== capacityRoom && roomNumber-1 !== capacityRoom && roomNumber-2 !== capacityRoom) {
+    validityText = invalidText;
+  }
+  capacityRoomAnnouncement.setCustomValidity(validityText);
+}
+
+function clearForm() {
+  formAnnouncement.reset();
+  mapFilter.reset();
+  map.closePopup();
+  priceAnnouncement.placeholder = '1000';
+  priceAnnouncement.min = '1000';
+  capacityRoomAnnouncement.setCustomValidity('');
+  mainPinMarker.setLatLng({lat: LAT_TOKIO, lng: LNG_TOKIO});
+  addressAnnouncement.value = `${mainPinMarker.getLatLng().lat}, ${mainPinMarker.getLatLng().lng}`;
+  preview.src = 'img/muffin-grey.svg';
+  if (previewHousingContainer.firstChild) {
+    previewHousingContainer.firstChild.remove();
+  }
+}
+
+function addlistener(template) {
+  document.body.append(template);
+  document.addEventListener ('click', () =>{
+    template.remove();
+  });
+  document.addEventListener ('keydown', (evt) => {
+    if (isEscapeKey(evt))  {
+      evt.preventDefault();
+      template.remove();
+      document.removeEventListener('keydown', (evt));
+    }
+  });
+}
+
+function onSuccess() {
+  clearForm();
+  const successElement = successTemplate.cloneNode(true);
+  addlistener(successElement);
+}
+
+function onError() {
+  const errorElement = errorTemplate.cloneNode(true);
+  addlistener(errorElement);
+}
 
 export {disableForm, enableForm};

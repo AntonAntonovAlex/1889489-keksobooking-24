@@ -20,23 +20,24 @@ const mapFilter = document.querySelector('.map__filters');
 let similarAnnouncements = [];
 
 disableForm();
-disableFilter();
 
-function disableFilter() {
+const disableFilter = () => {
   mapFilter.classList.add('ad-form--disabled');
   mapFeatures.setAttribute('disabled', 'disabled');
   allFormFilters.forEach((formFilter) => {
     formFilter.setAttribute('disabled', 'disabled');
   });
-}
+};
 
-function enableFilter() {
+disableFilter();
+
+const enableFilter = () => {
   mapFilter.classList.remove('ad-form--disabled');
   mapFeatures.removeAttribute('disabled');
   allFormFilters.forEach((formFilter) => {
     formFilter.removeAttribute('disabled');
   });
-}
+};
 
 const map = L.map('map-canvas')
   .on('load', () => {
@@ -81,7 +82,7 @@ mainPinMarker.on('drag', (evt) => {
 
 const markerGroup = L.layerGroup().addTo(map);
 
-function createMarkers(announcements) {
+const createMarkers = (announcements) => {
   markerGroup.clearLayers();
   announcements.forEach((announcement) => {
     const {lat, lng} = announcement.location;
@@ -106,9 +107,9 @@ function createMarkers(announcements) {
       .bindPopup(createCard(announcement.author, announcement.offer));
 
   });
-}
+};
 
-function comparePrices(priceFilter, priceAnnouncement) {
+const comparePrices = (priceFilter, priceAnnouncement) => {
   if (priceFilter === 'low' && priceAnnouncement > LOW_PRICE) {
     return false;
   }
@@ -119,9 +120,9 @@ function comparePrices(priceFilter, priceAnnouncement) {
     return false;
   }
   return true;
-}
+};
 
-function compareAnnouncements(announcement) {
+const compareAnnouncements = (announcement) => {
   if (housingType.value !== 'any' && housingType.value !== announcement.offer.type) {
     return false;
   }
@@ -135,19 +136,17 @@ function compareAnnouncements(announcement) {
     return comparePrices(housingPrice.value, announcement.offer.price);
   }
   return true;
-}
+};
 
-function getAnnouncementRank(announcement) {
-  return announcement.offer.features ? announcement.offer.features.length : 0;
-}
+const getAnnouncementRank = (announcement) => announcement.offer.features ? announcement.offer.features.length : 0;
 
-function compareAnnouncementFeatures(announcementA, announcementB) {
+const compareAnnouncementFeatures = (announcementA, announcementB) => {
   const rankA = getAnnouncementRank(announcementA);
   const rankB = getAnnouncementRank(announcementB);
   return rankB - rankA;
-}
+};
 
-function setHousingFiltersChange(announcements) {
+const setHousingFiltersChange = (announcements) => {
   mapFilter.addEventListener('change', () => {
     const filterCheckedFeatures = mapFeatures.querySelectorAll('.map__checkbox:checked');
     let result = announcements.slice();
@@ -172,7 +171,7 @@ function setHousingFiltersChange(announcements) {
       .sort(compareAnnouncementFeatures)
       .slice(0, ANNOUNCEMENTS_NUMBER)))();
   });
-}
+};
 
 function onSuccess(announcements) {
   similarAnnouncements = announcements;

@@ -1,10 +1,8 @@
 const ALERT_SHOW_TIME = 5000;
 
-function getRound(value) {
-  return (value % 1 === 0) ? Math.round(value) : value;
-}
+const getRound = (value) => (value % 1 === 0) ? Math.round(value) : value;
 
-function showAlert(message) {
+const showAlert = (message) => {
   const alertContainer = document.createElement('div');
   alertContainer.style.zIndex = 100;
   alertContainer.style.position = 'absolute';
@@ -21,19 +19,17 @@ function showAlert(message) {
   setTimeout(() => {
     alertContainer.remove();
   }, ALERT_SHOW_TIME);
-}
+};
 
-function isEscapeKey(evt) {
-  return evt.key === 'Escape';
-}
+const isEscapeKey = (evt) => evt.key === 'Escape';
 
-function debounce (callback, timeoutDelay = 500) {
+const debounce = (callback, timeoutDelay = 500) => {
   let timeoutId;
 
   return (...rest) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
   };
-}
+};
 
 export {getRound, showAlert, isEscapeKey, debounce};

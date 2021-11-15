@@ -25,7 +25,6 @@ fileChooserHousing.addEventListener('change', () => {
     previewHousingContainer.append(document.createElement('img'));
     const previewHousing = previewHousingContainer.querySelector('img');
     previewHousing.classList.add('ad-form__photo');
-    previewHousing.setAttribute('accept', 'image/png, image/jpeg');
     previewHousing.src = URL.createObjectURL(file);
   }
 });

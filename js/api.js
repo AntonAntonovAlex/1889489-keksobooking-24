@@ -1,4 +1,4 @@
-function fetchData(url, method, onSuccess, onError, body) {
+const fetchData = (url, method, onSuccess, onError, body) => {
   fetch(
     url,
     {
@@ -19,6 +19,6 @@ function fetchData(url, method, onSuccess, onError, body) {
     .catch(() => {
       onError();
     });
-}
+};
 
 export {fetchData};

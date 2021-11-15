@@ -31,6 +31,21 @@ priceAnnouncement.addEventListener('input', () => {
   priceAnnouncement.reportValidity();
 });
 
+const compareCapacityRoom = (roomNumber, capacityRoom) => {
+  const invalidText = 'Не подхoдит для выбранного кол-ва комнат';
+  roomNumber = Number(roomNumber);
+  capacityRoom = Number(capacityRoom);
+  let validityText = '';
+  if (capacityRoom === 0) {
+    if (roomNumber !== 100) {
+      validityText = invalidText;
+    }
+  } else if (roomNumber !== capacityRoom && roomNumber-1 !== capacityRoom && roomNumber-2 !== capacityRoom) {
+    validityText = invalidText;
+  }
+  capacityRoomAnnouncement.setCustomValidity(validityText);
+};
+
 roomNumberAnnouncement.addEventListener('change', () => {
   compareCapacityRoom(roomNumberAnnouncement.value, capacityRoomAnnouncement.value);
   capacityRoomAnnouncement.reportValidity();
@@ -55,52 +70,7 @@ typeBuildingAnnouncement.addEventListener('change', () => {
   priceAnnouncement.reportValidity();
 });
 
-formAnnouncement.addEventListener ('submit', (evt) => {
-  evt.preventDefault();
-  fetchData(URL, 'POST', onSuccess, onError, new FormData(evt.target));
-  createMarkers(similarAnnouncements.slice(0, ANNOUNCEMENTS_NUMBER));
-});
-
-resetButton.addEventListener('click', (evt) => {
-  evt.preventDefault();
-  clearForm();
-  createMarkers(similarAnnouncements.slice(0, ANNOUNCEMENTS_NUMBER));
-});
-
-function disableForm() {
-  formAnnouncement.classList.add('ad-form--disabled');
-  headerFormAnnouncement.setAttribute('disabled', 'disabled');
-
-  allFormElements.forEach((formElement) => {
-    formElement.setAttribute('disabled', 'disabled');
-  });
-}
-
-function enableForm() {
-  formAnnouncement.classList.remove('ad-form--disabled');
-  headerFormAnnouncement.removeAttribute('disabled');
-
-  allFormElements.forEach((formElement) => {
-    formElement.removeAttribute('disabled');
-  });
-}
-
-function compareCapacityRoom(roomNumber, capacityRoom) {
-  const invalidText = 'Не подхoдит для выбранного кол-ва комнат';
-  roomNumber = Number(roomNumber);
-  capacityRoom = Number(capacityRoom);
-  let validityText = '';
-  if (capacityRoom === 0) {
-    if (roomNumber !== 100) {
-      validityText = invalidText;
-    }
-  } else if (roomNumber !== capacityRoom && roomNumber-1 !== capacityRoom && roomNumber-2 !== capacityRoom) {
-    validityText = invalidText;
-  }
-  capacityRoomAnnouncement.setCustomValidity(validityText);
-}
-
-function clearForm() {
+const clearForm = () => {
   formAnnouncement.reset();
   mapFilter.reset();
   map.closePopup();
@@ -113,9 +83,9 @@ function clearForm() {
   if (previewHousingContainer.firstChild) {
     previewHousingContainer.firstChild.remove();
   }
-}
+};
 
-function addlistener(template) {
+const addlistener = (template) => {
   document.body.append(template);
   document.addEventListener ('click', () =>{
     template.remove();
@@ -127,17 +97,47 @@ function addlistener(template) {
       document.removeEventListener('keydown', (evt));
     }
   });
-}
+};
 
-function onSuccess() {
+const onSuccess = () => {
   clearForm();
   const successElement = successTemplate.cloneNode(true);
   addlistener(successElement);
-}
+};
 
-function onError() {
+const onError = () => {
   const errorElement = errorTemplate.cloneNode(true);
   addlistener(errorElement);
-}
+};
+
+formAnnouncement.addEventListener ('submit', (evt) => {
+  evt.preventDefault();
+  fetchData(URL, 'POST', onSuccess, onError, new FormData(evt.target));
+  createMarkers(similarAnnouncements.slice(0, ANNOUNCEMENTS_NUMBER));
+});
+
+resetButton.addEventListener('click', (evt) => {
+  evt.preventDefault();
+  clearForm();
+  createMarkers(similarAnnouncements.slice(0, ANNOUNCEMENTS_NUMBER));
+});
+
+const disableForm = () =>{
+  formAnnouncement.classList.add('ad-form--disabled');
+  headerFormAnnouncement.setAttribute('disabled', 'disabled');
+
+  allFormElements.forEach((formElement) => {
+    formElement.setAttribute('disabled', 'disabled');
+  });
+};
+
+const enableForm = () => {
+  formAnnouncement.classList.remove('ad-form--disabled');
+  headerFormAnnouncement.removeAttribute('disabled');
+
+  allFormElements.forEach((formElement) => {
+    formElement.removeAttribute('disabled');
+  });
+};
 
 export {disableForm, enableForm};

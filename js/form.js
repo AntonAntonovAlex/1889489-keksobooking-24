@@ -1,4 +1,4 @@
-import { LAT_TOKIO, LNG_TOKIO, MAX_PRICE, MinHousingPrise, ANNOUNCEMENTS_NUMBER } from './constants.js';
+import { LAT_TOKIO, LNG_TOKIO, MAX_PRICE, MinHousingPrice, ANNOUNCEMENTS_NUMBER } from './constants.js';
 import { fetchData } from './api.js';
 import { isEscapeKey } from './utils.js';
 import { mainPinMarker, map, createMarkers, similarAnnouncements } from './map.js';
@@ -67,8 +67,8 @@ timeoutAnnouncement.addEventListener('change', () => {
 });
 
 typeBuildingAnnouncement.addEventListener('change', () => {
-  priceAnnouncement.min = MinHousingPrise[typeBuildingAnnouncement.value.toUpperCase()];
-  priceAnnouncement.placeholder = MinHousingPrise[typeBuildingAnnouncement.value.toUpperCase()];
+  priceAnnouncement.min = MinHousingPrice[typeBuildingAnnouncement.value.toUpperCase()];
+  priceAnnouncement.placeholder = MinHousingPrice[typeBuildingAnnouncement.value.toUpperCase()];
   priceAnnouncement.reportValidity();
 });
 
@@ -87,7 +87,7 @@ const clearForm = () => {
   }
 };
 
-const addlistener = (template) => {
+const addListener = (template) => {
   document.body.append(template);
   document.addEventListener ('click', () =>{
     template.remove();
@@ -104,12 +104,12 @@ const addlistener = (template) => {
 const onSuccess = () => {
   clearForm();
   const successElement = successTemplate.cloneNode(true);
-  addlistener(successElement);
+  addListener(successElement);
 };
 
 const onError = () => {
   const errorElement = errorTemplate.cloneNode(true);
-  addlistener(errorElement);
+  addListener(errorElement);
 };
 
 formAnnouncement.addEventListener ('submit', (evt) => {

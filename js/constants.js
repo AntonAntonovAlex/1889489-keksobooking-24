@@ -5,7 +5,7 @@ const rusBuildingTypes= {
   palace: 'Дворец',
   hotel: 'Отель',
 };
-const MinHousingPrise= {
+const MinHousingPrice= {
   BUNGALOW: '0',
   FLAT: '1000',
   HOTEL: '3000',
@@ -17,4 +17,4 @@ const LAT_TOKIO = 35.68294;
 const LNG_TOKIO = 139.76764;
 const ANNOUNCEMENTS_NUMBER = 10;
 
-export {rusBuildingTypes, MAX_PRICE, MinHousingPrise, LAT_TOKIO, LNG_TOKIO, ANNOUNCEMENTS_NUMBER};
+export {rusBuildingTypes, MAX_PRICE, MinHousingPrice, LAT_TOKIO, LNG_TOKIO, ANNOUNCEMENTS_NUMBER};

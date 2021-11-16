@@ -1,4 +1,4 @@
-import { RUS_BUILDING_TYPES } from './constants.js';
+import { rusBuildingTypes } from './constants.js';
 
 const similarAnnouncementTemplate = document.querySelector('#card').content.querySelector('.popup');
 
@@ -48,7 +48,7 @@ const createCard = (author, offer) => {
   renderFieldCard (announcementElement, '.popup__text--capacity', rooms || guests, 'textContent', `${rooms} комнаты для ${guests} гостей`);
   renderFieldCard (announcementElement, '.popup__text--time', checkin || checkout, 'textContent', `Заезд после ${checkin}, выезд до ${checkout}`);
   renderFieldCard (announcementElement, '.popup__avatar', avatar, 'src');
-  renderFieldCard (announcementElement, '.popup__type', type, 'textContent', RUS_BUILDING_TYPES[type]);
+  renderFieldCard (announcementElement, '.popup__type', type, 'textContent', rusBuildingTypes[type]);
   renderFeatures(announcementElement, features, 'popup__feature');
   renderPhotos(announcementElement, photos, '.popup__photo', '.popup__photos');
   return announcementElement;

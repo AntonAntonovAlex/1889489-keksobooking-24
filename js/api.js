@@ -1,4 +1,4 @@
-const fetchData = (url, method, onSuccess, onError, body) =>{
+const fetchData = (url, method, onSuccess, onError, body) => {
   fetch(
     url,
     {
@@ -13,8 +13,8 @@ const fetchData = (url, method, onSuccess, onError, body) =>{
         throw new Error;
       }
     })
-    .then((announcements) => {
-      onSuccess(announcements);
+    .then((data) => {
+      onSuccess(data);
     })
     .catch(() => {
       onError();

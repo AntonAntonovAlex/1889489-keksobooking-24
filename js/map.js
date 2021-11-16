@@ -1,16 +1,20 @@
 import { enableForm, disableForm } from './form.js';
-import { getRound, showAlert } from './util.js';
+import { getRound, showAlert, debounce } from './utils.js';
 import { createCard } from './popup.js';
 import { fetchData } from './api.js';
-import { debounce } from './utils/debounce.js';
+import { ANNOUNCEMENTS_NUMBER, LAT_TOKIO, LNG_TOKIO } from './constants.js';
 
+const PriceAnnouncementFilter = {
+  LOW: 'low',
+  HIGH: 'high',
+  MIDDLE: 'middle',
+};
 const LOW_PRICE =  10000;
 const HIGH_PRICE = 50000;
 const MAIN_PIN_SIZE = 52;
 const USER_PIN_SIZE = 40;
-const LAT_TOKIO = 35.68294;
-const LNG_TOKIO = 139.76764;
-const ANNOUNCEMENTS_NUMBER = 10;
+const PIN_ICON_IMAGE = 'img/main-pin.svg';
+const MARKER_ICON_IMAGE = 'img/pin.svg';
 const URL = 'https://24.javascript.pages.academy/keksobooking/data';
 const addressAnnouncement =  document.querySelector('#address');
 const housingType =  document.querySelector('#housing-type');
@@ -22,6 +26,8 @@ const allFormFilters = document.querySelectorAll('.map__filter');
 const mapFilter = document.querySelector('.map__filters');
 let similarAnnouncements = [];
 
+disableForm();
+
 const disableFilter = () => {
   mapFilter.classList.add('ad-form--disabled');
   mapFeatures.setAttribute('disabled', 'disabled');
@@ -29,6 +35,8 @@ const disableFilter = () => {
     formFilter.setAttribute('disabled', 'disabled');
   });
 };
+
+disableFilter();
 
 const enableFilter = () => {
   mapFilter.classList.remove('ad-form--disabled');
@@ -38,11 +46,14 @@ const enableFilter = () => {
   });
 };
 
-disableForm();
-disableFilter();
+const onError = () => {
+  showAlert('Не удалось загрузить объявления. Попробуйте перезагрузить страницу');
+  disableFilter();
+};
 
 const map = L.map('map-canvas')
   .on('load', () => {
+    fetchData(URL, 'GET', onSuccess, onError);
     enableForm();
   })
   .setView({
@@ -58,7 +69,7 @@ L.tileLayer(
 ).addTo(map);
 
 const mainPinIcon = L.icon({
-  iconUrl: 'img/main-pin.svg',
+  iconUrl: PIN_ICON_IMAGE,
   iconSize: [MAIN_PIN_SIZE, MAIN_PIN_SIZE],
   iconAnchor: [MAIN_PIN_SIZE/2, MAIN_PIN_SIZE],
 });
@@ -88,7 +99,7 @@ const createMarkers = (announcements) => {
   announcements.forEach((announcement) => {
     const {lat, lng} = announcement.location;
     const icon = L.icon({
-      iconUrl: 'img/pin.svg',
+      iconUrl: MARKER_ICON_IMAGE,
       iconSize: [USER_PIN_SIZE, USER_PIN_SIZE],
       iconAnchor: [USER_PIN_SIZE/2, USER_PIN_SIZE],
     });
@@ -110,45 +121,36 @@ const createMarkers = (announcements) => {
   });
 };
 
-const onError = () => {
-  showAlert('Не удалось загрузить объявления. Попробуйте перезагрузить страницу');
-  disableFilter();
-};
-
 const comparePrices = (priceFilter, priceAnnouncement) => {
-  if (priceFilter === 'low' && priceAnnouncement > LOW_PRICE){
-    return(false);
-  } else if (priceFilter === 'high' && priceAnnouncement < HIGH_PRICE) {
-    return(false);
-  } else if (priceFilter === 'middle' && priceAnnouncement > HIGH_PRICE || priceAnnouncement < LOW_PRICE) {
-    return(false);
-  } else {
-    return(true);
+  if (priceFilter === PriceAnnouncementFilter.LOW && priceAnnouncement > LOW_PRICE) {
+    return false;
   }
+  if (priceFilter === PriceAnnouncementFilter.HIGH && priceAnnouncement < HIGH_PRICE) {
+    return false;
+  }
+  if (priceFilter === PriceAnnouncementFilter.MIDDLE && priceAnnouncement > HIGH_PRICE || priceAnnouncement < LOW_PRICE) {
+    return false;
+  }
+  return true;
 };
 
 const compareAnnouncements = (announcement) => {
   if (housingType.value !== 'any' && housingType.value !== announcement.offer.type) {
-    return(false);
-  } else if (housingRooms.value !== 'any' && Number(housingRooms.value) !== announcement.offer.rooms) {
-    return(false);
-  } else if (housingGuests.value !== 'any' && Number(housingGuests.value) !== announcement.offer.guests) {
-    return(false);
-  } else if (housingPrice.value !== 'any') {
-    return(comparePrices(housingPrice.value, announcement.offer.price));
-  } else {
-    return(true);
+    return false;
   }
+  if (housingRooms.value !== 'any' && Number(housingRooms.value) !== announcement.offer.rooms) {
+    return false;
+  }
+  if (housingGuests.value !== 'any' && Number(housingGuests.value) !== announcement.offer.guests) {
+    return false;
+  }
+  if (housingPrice.value !== 'any') {
+    return comparePrices(housingPrice.value, announcement.offer.price);
+  }
+  return true;
 };
 
-const getAnnouncementRank = (announcement) => {
-  let rank = 0;
-  if (!announcement.offer.features) {
-    return rank;
-  }
-  rank = announcement.offer.features.length;
-  return rank;
-};
+const getAnnouncementRank = (announcement) => announcement.offer.features ? announcement.offer.features.length : 0;
 
 const compareAnnouncementFeatures = (announcementA, announcementB) => {
   const rankA = getAnnouncementRank(announcementA);
@@ -156,10 +158,12 @@ const compareAnnouncementFeatures = (announcementA, announcementB) => {
   return rankB - rankA;
 };
 
-const setHousingFiltersChange = (announcements) =>{
+const debounceFunction = debounce((result) => createMarkers(result));
+
+const setHousingFiltersChange = (announcements) => {
   mapFilter.addEventListener('change', () => {
     const filterCheckedFeatures = mapFeatures.querySelectorAll('.map__checkbox:checked');
-    let result = announcements;
+    let result = announcements.slice();
     if (housingType.value !== 'any' || housingPrice.value !== 'any' || housingRooms.value !== 'any' || housingGuests.value !== 'any') {
       result = announcements.filter(compareAnnouncements);
     }
@@ -177,20 +181,17 @@ const setHousingFiltersChange = (announcements) =>{
         return inIncludes;
       });
     }
-    debounce(() => createMarkers(result
-      .slice()
+    debounceFunction(result
       .sort(compareAnnouncementFeatures)
-      .slice(0, ANNOUNCEMENTS_NUMBER)))();
+      .slice(0, ANNOUNCEMENTS_NUMBER));
   });
 };
 
-const onSuccess = (announcements) => {
+function onSuccess(announcements) {
   similarAnnouncements = announcements;
   createMarkers(announcements.slice(0, ANNOUNCEMENTS_NUMBER));
   setHousingFiltersChange(announcements);
   enableFilter();
-};
+}
 
-fetchData(URL, 'GET', onSuccess, onError);
-
-export {mainPinMarker, LAT_TOKIO, LNG_TOKIO, addressAnnouncement, map, mapFilter, similarAnnouncements, createMarkers, ANNOUNCEMENTS_NUMBER};
+export {mainPinMarker, map, similarAnnouncements, createMarkers};

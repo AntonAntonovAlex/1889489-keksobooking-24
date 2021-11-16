@@ -1,8 +1,10 @@
-import { MAX_PRICE, MIN_HOUSING_PRICES } from './constants.js';
+import { LAT_TOKIO, LNG_TOKIO, MAX_PRICE, MinHousingPrise, ANNOUNCEMENTS_NUMBER } from './constants.js';
 import { fetchData } from './api.js';
-import { isEscapeKey } from './util.js';
-import { LAT_TOKIO, LNG_TOKIO, mainPinMarker, addressAnnouncement, map, mapFilter, createMarkers, similarAnnouncements, ANNOUNCEMENTS_NUMBER } from './map.js';
+import { isEscapeKey } from './utils.js';
+import { mainPinMarker, map, createMarkers, similarAnnouncements } from './map.js';
 
+const PRICE_ANNOUNCEMENT_DEFAULT= '1000';
+const PREVIEW_IMAGE_DEFAULT = 'img/muffin-grey.svg';
 const URL = 'https://24.javascript.pages.academy/keksobooking';
 const allFormElements = document.querySelectorAll('.ad-form__element');
 const formAnnouncement = document.querySelector('.ad-form');
@@ -16,24 +18,20 @@ const typeBuildingAnnouncement =  document.querySelector('#type');
 const successTemplate = document.querySelector('#success').content.querySelector('.success');
 const errorTemplate = document.querySelector('#error').content.querySelector('.error');
 const resetButton = document.querySelector('.ad-form__reset');
+const preview = document.querySelector('.ad-form-header__preview').querySelector('img');
+const previewHousingContainer = document.querySelector('.ad-form__photo');
+const mapFilter = document.querySelector('.map__filters');
+const addressAnnouncement =  document.querySelector('#address');
 
-const disableForm = () => {
-  formAnnouncement.classList.add('ad-form--disabled');
-  headerFormAnnouncement.setAttribute('disabled', 'disabled');
-
-  allFormElements.forEach((formElement) => {
-    formElement.setAttribute('disabled', 'disabled');
-  });
-};
-
-const enableForm = () => {
-  formAnnouncement.classList.remove('ad-form--disabled');
-  headerFormAnnouncement.removeAttribute('disabled');
-
-  allFormElements.forEach((formElement) => {
-    formElement.removeAttribute('disabled');
-  });
-};
+priceAnnouncement.addEventListener('input', () => {
+  const valuePrice = priceAnnouncement.value;
+  if (valuePrice > MAX_PRICE) {
+    priceAnnouncement.setCustomValidity('Цена не должна превышать 1 000 000');
+  } else {
+    priceAnnouncement.setCustomValidity('');
+  }
+  priceAnnouncement.reportValidity();
+});
 
 const compareCapacityRoom = (roomNumber, capacityRoom) => {
   const invalidText = 'Не подхoдит для выбранного кол-ва комнат';
@@ -49,16 +47,6 @@ const compareCapacityRoom = (roomNumber, capacityRoom) => {
   }
   capacityRoomAnnouncement.setCustomValidity(validityText);
 };
-
-priceAnnouncement.addEventListener('input', () => {
-  const valuePrice = priceAnnouncement.value;
-  if (valuePrice > MAX_PRICE) {
-    priceAnnouncement.setCustomValidity('Цена не должна превышать 1 000 000');
-  } else {
-    priceAnnouncement.setCustomValidity('');
-  }
-  priceAnnouncement.reportValidity();
-});
 
 roomNumberAnnouncement.addEventListener('change', () => {
   compareCapacityRoom(roomNumberAnnouncement.value, capacityRoomAnnouncement.value);
@@ -79,20 +67,24 @@ timeoutAnnouncement.addEventListener('change', () => {
 });
 
 typeBuildingAnnouncement.addEventListener('change', () => {
-  priceAnnouncement.min = MIN_HOUSING_PRICES[typeBuildingAnnouncement.value];
-  priceAnnouncement.placeholder = MIN_HOUSING_PRICES[typeBuildingAnnouncement.value];
+  priceAnnouncement.min = MinHousingPrise[typeBuildingAnnouncement.value.toUpperCase()];
+  priceAnnouncement.placeholder = MinHousingPrise[typeBuildingAnnouncement.value.toUpperCase()];
   priceAnnouncement.reportValidity();
 });
-
 
 const clearForm = () => {
   formAnnouncement.reset();
   mapFilter.reset();
   map.closePopup();
-  priceAnnouncement.placeholder = '1000';
+  priceAnnouncement.placeholder = PRICE_ANNOUNCEMENT_DEFAULT;
+  priceAnnouncement.min = PRICE_ANNOUNCEMENT_DEFAULT;
+  capacityRoomAnnouncement.setCustomValidity('');
   mainPinMarker.setLatLng({lat: LAT_TOKIO, lng: LNG_TOKIO});
   addressAnnouncement.value = `${mainPinMarker.getLatLng().lat}, ${mainPinMarker.getLatLng().lng}`;
-
+  preview.src = PREVIEW_IMAGE_DEFAULT;
+  if (previewHousingContainer.firstChild) {
+    previewHousingContainer.firstChild.remove();
+  }
 };
 
 const addlistener = (template) => {
@@ -131,5 +123,23 @@ resetButton.addEventListener('click', (evt) => {
   clearForm();
   createMarkers(similarAnnouncements.slice(0, ANNOUNCEMENTS_NUMBER));
 });
+
+const disableForm = () =>{
+  formAnnouncement.classList.add('ad-form--disabled');
+  headerFormAnnouncement.setAttribute('disabled', 'disabled');
+
+  allFormElements.forEach((formElement) => {
+    formElement.setAttribute('disabled', 'disabled');
+  });
+};
+
+const enableForm = () => {
+  formAnnouncement.classList.remove('ad-form--disabled');
+  headerFormAnnouncement.removeAttribute('disabled');
+
+  allFormElements.forEach((formElement) => {
+    formElement.removeAttribute('disabled');
+  });
+};
 
 export {disableForm, enableForm};

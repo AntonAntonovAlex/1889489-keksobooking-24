@@ -1,8 +1,10 @@
-import { LAT_TOKIO, LNG_TOKIO, MAX_PRICE, MIN_HOUSING_PRICES, ANNOUNCEMENTS_NUMBER } from './constants.js';
+import { LAT_TOKIO, LNG_TOKIO, MAX_PRICE, MinHousingPrise, ANNOUNCEMENTS_NUMBER } from './constants.js';
 import { fetchData } from './api.js';
 import { isEscapeKey } from './utils.js';
 import { mainPinMarker, map, createMarkers, similarAnnouncements } from './map.js';
 
+const PRICE_ANNOUNCEMENT_DEFAULT= '1000';
+const PREVIEW_IMAGE_DEFAULT = 'img/muffin-grey.svg';
 const URL = 'https://24.javascript.pages.academy/keksobooking';
 const allFormElements = document.querySelectorAll('.ad-form__element');
 const formAnnouncement = document.querySelector('.ad-form');
@@ -65,8 +67,8 @@ timeoutAnnouncement.addEventListener('change', () => {
 });
 
 typeBuildingAnnouncement.addEventListener('change', () => {
-  priceAnnouncement.min = MIN_HOUSING_PRICES[typeBuildingAnnouncement.value];
-  priceAnnouncement.placeholder = MIN_HOUSING_PRICES[typeBuildingAnnouncement.value];
+  priceAnnouncement.min = MinHousingPrise[typeBuildingAnnouncement.value.toUpperCase()];
+  priceAnnouncement.placeholder = MinHousingPrise[typeBuildingAnnouncement.value.toUpperCase()];
   priceAnnouncement.reportValidity();
 });
 
@@ -74,12 +76,12 @@ const clearForm = () => {
   formAnnouncement.reset();
   mapFilter.reset();
   map.closePopup();
-  priceAnnouncement.placeholder = '1000';
-  priceAnnouncement.min = '1000';
+  priceAnnouncement.placeholder = PRICE_ANNOUNCEMENT_DEFAULT;
+  priceAnnouncement.min = PRICE_ANNOUNCEMENT_DEFAULT;
   capacityRoomAnnouncement.setCustomValidity('');
   mainPinMarker.setLatLng({lat: LAT_TOKIO, lng: LNG_TOKIO});
   addressAnnouncement.value = `${mainPinMarker.getLatLng().lat}, ${mainPinMarker.getLatLng().lng}`;
-  preview.src = 'img/muffin-grey.svg';
+  preview.src = PREVIEW_IMAGE_DEFAULT;
   if (previewHousingContainer.firstChild) {
     previewHousingContainer.firstChild.remove();
   }

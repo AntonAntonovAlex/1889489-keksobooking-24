@@ -4,10 +4,17 @@ import { createCard } from './popup.js';
 import { fetchData } from './api.js';
 import { ANNOUNCEMENTS_NUMBER, LAT_TOKIO, LNG_TOKIO } from './constants.js';
 
+const PriceAnnouncementFilter = {
+  LOW: 'low',
+  HIGH: 'high',
+  MIDDLE: 'middle',
+};
 const LOW_PRICE =  10000;
 const HIGH_PRICE = 50000;
 const MAIN_PIN_SIZE = 52;
 const USER_PIN_SIZE = 40;
+const PIN_ICON_IMAGE = 'img/main-pin.svg';
+const MARKER_ICON_IMAGE = 'img/pin.svg';
 const URL = 'https://24.javascript.pages.academy/keksobooking/data';
 const addressAnnouncement =  document.querySelector('#address');
 const housingType =  document.querySelector('#housing-type');
@@ -39,6 +46,11 @@ const enableFilter = () => {
   });
 };
 
+const onError = () => {
+  showAlert('Не удалось загрузить объявления. Попробуйте перезагрузить страницу');
+  disableFilter();
+};
+
 const map = L.map('map-canvas')
   .on('load', () => {
     fetchData(URL, 'GET', onSuccess, onError);
@@ -57,7 +69,7 @@ L.tileLayer(
 ).addTo(map);
 
 const mainPinIcon = L.icon({
-  iconUrl: 'img/main-pin.svg',
+  iconUrl: PIN_ICON_IMAGE,
   iconSize: [MAIN_PIN_SIZE, MAIN_PIN_SIZE],
   iconAnchor: [MAIN_PIN_SIZE/2, MAIN_PIN_SIZE],
 });
@@ -87,7 +99,7 @@ const createMarkers = (announcements) => {
   announcements.forEach((announcement) => {
     const {lat, lng} = announcement.location;
     const icon = L.icon({
-      iconUrl: 'img/pin.svg',
+      iconUrl: MARKER_ICON_IMAGE,
       iconSize: [USER_PIN_SIZE, USER_PIN_SIZE],
       iconAnchor: [USER_PIN_SIZE/2, USER_PIN_SIZE],
     });
@@ -110,13 +122,13 @@ const createMarkers = (announcements) => {
 };
 
 const comparePrices = (priceFilter, priceAnnouncement) => {
-  if (priceFilter === 'low' && priceAnnouncement > LOW_PRICE) {
+  if (priceFilter === PriceAnnouncementFilter.LOW && priceAnnouncement > LOW_PRICE) {
     return false;
   }
-  if (priceFilter === 'high' && priceAnnouncement < HIGH_PRICE) {
+  if (priceFilter === PriceAnnouncementFilter.HIGH && priceAnnouncement < HIGH_PRICE) {
     return false;
   }
-  if (priceFilter === 'middle' && priceAnnouncement > HIGH_PRICE || priceAnnouncement < LOW_PRICE) {
+  if (priceFilter === PriceAnnouncementFilter.MIDDLE && priceAnnouncement > HIGH_PRICE || priceAnnouncement < LOW_PRICE) {
     return false;
   }
   return true;
@@ -146,6 +158,8 @@ const compareAnnouncementFeatures = (announcementA, announcementB) => {
   return rankB - rankA;
 };
 
+const debounceFunction = debounce((result) => createMarkers(result));
+
 const setHousingFiltersChange = (announcements) => {
   mapFilter.addEventListener('change', () => {
     const filterCheckedFeatures = mapFeatures.querySelectorAll('.map__checkbox:checked');
@@ -167,9 +181,9 @@ const setHousingFiltersChange = (announcements) => {
         return inIncludes;
       });
     }
-    debounce(() => createMarkers(result
+    debounceFunction(result
       .sort(compareAnnouncementFeatures)
-      .slice(0, ANNOUNCEMENTS_NUMBER)))();
+      .slice(0, ANNOUNCEMENTS_NUMBER));
   });
 };
 
@@ -178,11 +192,6 @@ function onSuccess(announcements) {
   createMarkers(announcements.slice(0, ANNOUNCEMENTS_NUMBER));
   setHousingFiltersChange(announcements);
   enableFilter();
-}
-
-function onError() {
-  showAlert('Не удалось загрузить объявления. Попробуйте перезагрузить страницу');
-  disableFilter();
 }
 
 export {mainPinMarker, map, similarAnnouncements, createMarkers};

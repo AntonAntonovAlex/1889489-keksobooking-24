@@ -169,16 +169,10 @@ const setHousingFiltersChange = (announcements) => {
     }
     if (filterCheckedFeatures.length !== 0) {
       result = result.filter((element) => {
-        let inIncludes = true;
         if (!element.offer.features) {
           return false;
         }
-        filterCheckedFeatures.forEach((features) => {
-          if (!element.offer.features.includes(features.defaultValue)) {
-            inIncludes = false;
-          }
-        });
-        return inIncludes;
+        return Array.from(filterCheckedFeatures).every((feature) => element.offer.features.includes(feature.defaultValue));
       });
     }
     debounceFunction(result

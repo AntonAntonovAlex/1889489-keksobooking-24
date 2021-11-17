@@ -87,29 +87,28 @@ const clearForm = () => {
   }
 };
 
-const addListener = (template) => {
-  document.body.append(template);
-  document.addEventListener ('click', () =>{
-    template.remove();
-  });
-  document.addEventListener ('keydown', (evt) => {
-    if (isEscapeKey(evt))  {
-      evt.preventDefault();
-      template.remove();
-      document.removeEventListener('keydown', (evt));
+const showMessage = (element) => {
+  document.body.append(element);
+  const removeSuccessElement = (evt) => {
+    if (evt.type === 'click' || isEscapeKey(evt)) {
+      element.remove();
+      document.removeEventListener('keydown', removeSuccessElement);
+      document.removeEventListener('click', removeSuccessElement);
     }
-  });
+  };
+  document.addEventListener ('click', removeSuccessElement);
+  document.addEventListener ('keydown', removeSuccessElement);
 };
 
 const onSuccess = () => {
   clearForm();
   const successElement = successTemplate.cloneNode(true);
-  addListener(successElement);
+  showMessage(successElement);
 };
 
 const onError = () => {
   const errorElement = errorTemplate.cloneNode(true);
-  addListener(errorElement);
+  showMessage(errorElement);
 };
 
 formAnnouncement.addEventListener ('submit', (evt) => {

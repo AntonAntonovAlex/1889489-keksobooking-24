@@ -3,30 +3,32 @@ import { rusBuildingTypes } from './constants.js';
 const similarAnnouncementTemplate = document.querySelector('#card').content.querySelector('.popup');
 
 const renderFeatures = (announcementElement, features, nodeFeatures) => {
+  const announcementFeaturesContainer = announcementElement.querySelector(`.${nodeFeatures}s`);
   if (features) {
-    const featuresList = announcementElement.querySelectorAll(`.${nodeFeatures}`);
-    featuresList.forEach((featuresListItem) => {
-      const isNecessary = features.some((offerFeature) => featuresListItem.classList.contains(`${nodeFeatures}--${offerFeature}`));
-      if (!isNecessary) {
-        featuresListItem.remove();
-      }
+    announcementFeaturesContainer.innerHTML = '';
+    features.forEach((feature) => {
+      const featureElement = document.createElement('li');
+      featureElement.classList.add(nodeFeatures);
+      featureElement.classList.add(`${nodeFeatures}--${feature}`);
+      announcementFeaturesContainer.appendChild(featureElement);
     });
-  } else {
-    announcementElement.querySelector(`.${nodeFeatures}s`).classList.add('hidden');
+    return;
   }
+  announcementFeaturesContainer.classList.add('hidden');
 };
 
 const renderPhotos = (announcementElement, photos, nodePhoto, nodePhotos) => {
   if (photos) {
-    announcementElement.querySelector(nodePhoto).src = photos[0];
-    for (let i = 1; i<photos.length; i++) {
-      const offerPhotoTemplate = announcementElement.querySelector(nodePhoto).cloneNode(true);
-      offerPhotoTemplate.src = photos[i];
-      announcementElement.querySelector(nodePhotos).appendChild(offerPhotoTemplate);
-    }
-  } else {
-    announcementElement.querySelector(nodePhotos).classList.add('hidden');
+    const offerPhotoTemplate = announcementElement.querySelector(nodePhoto);
+    announcementElement.querySelector(nodePhotos).innerHTML='';
+    photos.forEach((photo) => {
+      const offerPhotoTemplate2 = offerPhotoTemplate.cloneNode(true);
+      offerPhotoTemplate2.src = photo;
+      announcementElement.querySelector(nodePhotos).appendChild(offerPhotoTemplate2);
+    });
+    return;
   }
+  announcementElement.querySelector(nodePhotos).classList.add('hidden');
 };
 
 const renderFieldCard = (announcementElement, nodeValue, offerValue, propertyValue, meaningString) => {

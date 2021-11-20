@@ -87,17 +87,28 @@ const clearForm = () => {
   }
 };
 
+const removeSuccessElement = (element, onMessageEscClick, onMessageClick) => {
+  element.remove();
+  document.removeEventListener('keydown', onMessageEscClick);
+  document.removeEventListener('click', onMessageClick);
+};
+
 const showMessage = (element) => {
   document.body.append(element);
-  const removeSuccessElement = (evt) => {
-    if (evt.type === 'click' || isEscapeKey(evt)) {
-      element.remove();
-      document.removeEventListener('keydown', removeSuccessElement);
-      document.removeEventListener('click', removeSuccessElement);
+
+  const onMessageClick = (evt) => {
+    if (evt.type === 'click') {
+      removeSuccessElement(element, onMessageEscClick, onMessageClick);
     }
   };
-  document.addEventListener ('click', removeSuccessElement);
-  document.addEventListener ('keydown', removeSuccessElement);
+
+  function onMessageEscClick(evt) {
+    if (isEscapeKey(evt)) {
+      removeSuccessElement(element, onMessageEscClick, onMessageClick);
+    }
+  }
+  document.addEventListener ('click', onMessageClick);
+  document.addEventListener ('keydown', onMessageEscClick);
 };
 
 const onSuccess = () => {
